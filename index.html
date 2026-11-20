@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prácticas de Funciones en JavaScript</title>
+    <!-- Tailwind CSS para diseño moderno y responsivo -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Configuración de fuente Arial solicitada con respaldo sans-serif limpio */
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+        }
+        /* Estilo personalizado para barras de desplazamiento en bloques de código */
+        pre::-webkit-scrollbar {
+            height: 8px;
+        }
+        pre::-webkit-scrollbar-track {
+            background: #1e293b;
+            border-radius: 0 0 8px 8px;
+        }
+        pre::-webkit-scrollbar-thumb {
+            background: #475569;
+            border-radius: 4px;
+        }
+        pre::-webkit-scrollbar-thumb:hover {
+            background: #64748b;
+        }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800 min-h-screen flex flex-col md:flex-row">
+
+    <!-- Notificación flotante (Toast) para mensajes y copiado -->
+    <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 bg-slate-900 text-white px-5 py-3 rounded-xl shadow-lg flex items-center gap-3 pointer-events-none">
+        <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+        </svg>
+        <span id="toast-message" class="text-sm font-medium">Mensaje</span>
+    </div>
+
+    <!-- Menú Lateral Vertical (Sidebar) -->
+    <aside class="w-full md:w-72 bg-slate-900 text-white flex-shrink-0 flex flex-col justify-between shadow-xl md:min-h-screen md:sticky md:top-0">
+        <div>
+            <!-- Encabezado del Menú -->
+            <div class="p-6 border-b border-slate-800 flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center font-bold text-lg shadow-inner">
+                    JS
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg leading-tight tracking-wide">Prácticas JS</h1>
+                    <p class="text-xs text-slate-400">Funciones y Retornos</p>
+                </div>
+            </div>
+
+            <!-- Navegación Vertical -->
+            <nav class="p-4 space-y-2" aria-label="Menú de ejercicios">
+                <p class="px-3 text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">
+                    Ejercicios Disponibles
+                </p>
+
+                <!-- Opción 1: Área del Círculo -->
+                <button id="btn-nav-circulo" onclick="cambiarSeccion('circulo')" 
+                    class="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl text-left font-medium transition-all duration-200 bg-indigo-600 text-white shadow-md">
+                    <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="9" stroke-width="2"></circle>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 12l6.36-6.36"></path>
+                    </svg>
+                    <span>Área del Círculo</span>
+                </button>
+
+                <!-- Opción 2: Índice de Masa Corporal (IMC) -->
+                <button id="btn-nav-imc" onclick="cambiarSeccion('imc')" 
+                    class="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl text-left font-medium transition-all duration-200 text-slate-300 hover:bg-slate-800 hover:text-white">
+                    <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                    </svg>
+                    <span>Índice de Masa Corporal (IMC)</span>
+                </button>
+            </nav>
+        </div>
+
+        <!-- Pie del Sidebar con Botón de GitHub -->
+        <div class="p-4 border-t border-slate-800 space-y-4">
+            <a href="https://github.com/ChrisHS176/Menu" target="_blank" rel="noopener noreferrer"
+                class="w-full flex items-center justify-center gap-2.5 px-4 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-semibold text-sm transition-all duration-200 border border-slate-700 hover:border-slate-600 shadow-sm">
+                <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24" aria-hidden="true">
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"></path>
+                </svg>
+                <span>Ver en GitHub</span>
+            </a>
+
+            <div class="text-xs text-slate-400 hidden md:block px-1">
+                <p class="font-medium text-slate-300 mb-1">Entorno Interactivo</p>
+                <p>Selecciona un programa del menú para probar su ejecución y analizar su código fuente.</p>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Área Principal de Contenido -->
+    <main class="flex-1 p-4 sm:p-8 lg:p-10 max-w-5xl mx-auto w-full">
+
+        <!-- ========================================================= -->
+        <!-- SECCIÓN 1: ÁREA DEL CÍRCULO                               -->
+        <!-- ========================================================= -->
+        <section id="seccion-circulo" class="space-y-6 transition-opacity duration-300">
+            <!-- Encabezado de la Tarjeta -->
+            <header class="bg-white p-6 sm:p-8 rounded-2xl shadow-sm border border-slate-200">
+                <div class="inline-block px-3 py-1 bg-indigo-50 text-indigo-700 text-xs font-bold rounded-full mb-3">
+                    Ejercicio 01 • Retorno de Valores
+                </div>
+                <h2 class="text-2xl sm:text-3xl font-bold text-slate-900">Funciones que devuelven resultados</h2>
+                <p class="text-slate-600 mt-2 text-sm sm:text-base">
+                    Este programa utiliza la función <code class="bg-slate-100 text-indigo-700 px-1.5 py-0.5 rounded font-mono text-sm">calcularAreaCirculo(radio)</code> para calcular el área geométrica mediante <code class="bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded font-mono text-sm">Math.PI</code> y redondear el resultado a dos decimales con <code class="bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded font-mono text-sm">.toFixed(2)</code>.
+                </p>
+            </header>
+
+            <!-- Tarjeta de Ejecución Interactiva -->
+            <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-sm border border-slate-200">
+                <h3 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                    Simulador Interactivo
+                </h3>
+
+                <form id="form-circulo" onsubmit="ejecutarCirculo(event)" class="space-y-4">
+                    <div>
+                        <label for="input-radio" class="block text-sm font-bold text-slate-700 mb-2">
+                            Dame el valor del radio del círculo:
+                        </label>
+                        <div class="flex flex-col sm:flex-row gap-3">
+                            <input type="number" id="input-radio" step="any" placeholder="Escribe un número entero (ej. 5)" required
+                                class="flex-1 px-4 py-3 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-slate-900 bg-slate-50">
+                            <button type="submit" 
+                                class="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-bold rounded-xl shadow-sm transition-colors cursor-pointer">
+                                Calcular Área
+                            </button>
+                        </div>
+                    </div>
+                </form>
+
+                <!-- Contenedor de Resultado -->
+                <div id="resultado-circulo-box" class="hidden mt-6 p-5 rounded-xl bg-indigo-50 border border-indigo-200">
+                    <p class="text-xs font-bold uppercase tracking-wider text-indigo-600 mb-1">Salida del programa:</p>
+                    <p id="resultado-circulo-texto" class="text-lg sm:text-xl font-bold text-slate-900"></p>
+                </div>
+            </div>
+
+            <!-- Tarjeta de Código Fuente Original -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                <div class="p-4 sm:px-6 bg-slate-50 border-b border-slate-200 flex flex-wrap items-center justify-between gap-3">
+                    <button onclick="toggleCodigo('codigo-circulo-wrapper', 'icon-circulo')" class="flex items-center gap-2 font-bold text-slate-800 hover:text-indigo-600 transition-colors cursor-pointer">
+                        <svg id="icon-circulo" class="w-5 h-5 transform rotate-90 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                        <span>Código Fuente Original (HTML / JavaScript)</span>
+                    </button>
+                    <button onclick="copiarCodigo('codigo-circulo-raw')" 
+                        class="px-3.5 py-1.5 text-xs font-bold bg-slate-200 hover:bg-slate-300 text-slate-800 rounded-lg transition-colors flex items-center gap-1.5 cursor-pointer">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                        </svg>
+                        Copiar Código
+                    </button>
+                </div>
+
+                <!-- Bloque de Código con Resaltado Visual -->
+                <div id="codigo-circulo-wrapper" class="bg-slate-900 text-slate-100 p-5 overflow-x-auto">
+                    <pre class="font-mono text-sm leading-relaxed"><code><span class="text-slate-400">&lt;html&gt;</span>
+<span class="text-slate-400">&lt;body&gt;</span>
+<span class="text-slate-400">&lt;font face="Arial"&gt;</span>
+<span class="text-sky-400">&lt;h2&gt;</span>Funciones que devuelven resultados<span class="text-sky-400">&lt;/h2&gt;</span>
+
+<span class="text-amber-300">&lt;script type="text/javascript"&gt;</span>
+
+<span class="text-purple-400">function</span> <span class="text-blue-400">calcularAreaCirculo</span>(radio) {
+  <span class="text-purple-400">var</span> area = Math.PI * radio * radio; <span class="text-emerald-400">//calcula el área del círculo</span>
+  <span class="text-purple-400">var</span> area2 = area.toFixed(<span class="text-orange-300">2</span>); <span class="text-emerald-400">// lo ajusta a 2 decimales</span>
+  <span class="text-purple-400">return</span> area2; <span class="text-emerald-400">// &lt;-- Aquí regresa el área ya calculada.</span>
+}
+
+radio = prompt(<span class="text-amber-200">"Dame el valor del radio del círculo:"</span>, <span class="text-amber-200">"Escribe un número entero"</span>);
+<span class="text-purple-400">var</span> <span class="text-white font-bold">areaCirculo</span> = calcularAreaCirculo(radio); <span class="text-emerald-400">// &lt;-- areaCirculo recibe el valor calculado</span>
+document.write(<span class="text-amber-200">"El área del círculo es: "</span> + <span class="text-white font-bold">areaCirculo</span>);
+
+<span class="text-amber-300">&lt;/script&gt;</span>
+<span class="text-slate-400">&lt;/font&gt;</span>
+<span class="text-slate-400">&lt;/body&gt;</span>
+<span class="text-slate-400">&lt;/html&gt;</span></code></pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================================= -->
+        <!-- SECCIÓN 2: ÍNDICE DE MASA CORPORAL (IMC)                  -->
+        <!-- ========================================================= -->
+        <section id="seccion-imc" class="hidden space-y-6 transition-opacity duration-300">
+            <!-- Encabezado de la Tarjeta -->
+            <header class="bg-white p-6 sm:p-8 rounded-2xl shadow-sm border border-slate-200">
+                <div class="inline-block px-3 py-1 bg-teal-50 text-teal-700 text-xs font-bold rounded-full mb-3">
+                    Ejercicio 02 • Condicionales y Parámetros
+                </div>
+                <h2 class="text-2xl sm:text-3xl font-bold text-slate-900">Funciones definidas por el usuario</h2>
+                <p class="text-slate-600 mt-2 text-sm sm:text-base">
+                    Este programa define <code class="bg-slate-100 text-teal-700 px-1.5 py-0.5 rounded font-mono text-sm">calcularIMC(peso, altura)</code> con dos parámetros, redondea el resultado con <code class="bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded font-mono text-sm">Math.round()</code> y evalúa el rango mediante estructuras <code class="bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded font-mono text-sm">if / else if</code>.
+                </p>
+            </header>
+
+            <!-- Tarjeta de Ejecución Interactiva -->
+            <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-sm border border-slate-200">
+                <h3 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-teal-500"></span>
+                    Simulador Interactivo
+                </h3>
+
+                <form id="form-imc" onsubmit="ejecutarIMC(event)" class="space-y-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label for="input-peso" class="block text-sm font-bold text-slate-700 mb-2">
+                                Cuánto pesas (en kg):
+                            </label>
+                            <input type="number" id="input-peso" step="any" placeholder="Ej. 70" required
+                                class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 text-slate-900 bg-slate-50">
+                        </div>
+                        <div>
+                            <label for="input-altura" class="block text-sm font-bold text-slate-700 mb-2">
+                                Cuánto mides (en metros):
+                            </label>
+                            <input type="number" id="input-altura" step="any" placeholder="Ej. 1.75" required
+                                class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 text-slate-900 bg-slate-50">
+                        </div>
+                    </div>
+
+                    <div class="pt-1">
+                        <button type="submit" 
+                            class="w-full sm:w-auto px-6 py-3 bg-teal-600 hover:bg-teal-700 active:bg-teal-800 text-white font-bold rounded-xl shadow-sm transition-colors cursor-pointer">
+                            Calcular IMC
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Contenedor de Resultado -->
+                <div id="resultado-imc-box" class="hidden mt-6 p-5 rounded-xl bg-teal-50 border border-teal-200">
+                    <p class="text-xs font-bold uppercase tracking-wider text-teal-700 mb-1">Salida del programa:</p>
+                    <p id="resultado-imc-texto" class="text-lg sm:text-xl font-bold text-slate-900"></p>
+                </div>
+            </div>
+
+            <!-- Tarjeta de Código Fuente Original -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                <div class="p-4 sm:px-6 bg-slate-50 border-b border-slate-200 flex flex-wrap items-center justify-between gap-3">
+                    <button onclick="toggleCodigo('codigo-imc-wrapper', 'icon-imc')" class="flex items-center gap-2 font-bold text-slate-800 hover:text-teal-600 transition-colors cursor-pointer">
+                        <svg id="icon-imc" class="w-5 h-5 transform rotate-90 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                        <span>Código Fuente Original (HTML / JavaScript)</span>
+                    </button>
+                    <button onclick="copiarCodigo('codigo-imc-raw')" 
+                        class="px-3.5 py-1.5 text-xs font-bold bg-slate-200 hover:bg-slate-300 text-slate-800 rounded-lg transition-colors flex items-center gap-1.5 cursor-pointer">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                        </svg>
+                        Copiar Código
+                    </button>
+                </div>
+
+                <!-- Bloque de Código con Resaltado Visual -->
+                <div id="codigo-imc-wrapper" class="bg-slate-900 text-slate-100 p-5 overflow-x-auto">
+                    <pre class="font-mono text-sm leading-relaxed"><code><span class="text-slate-400">&lt;!DOCTYPE html&gt;</span>
+<span class="text-slate-400">&lt;html&gt;</span>
+<span class="text-slate-400">&lt;meta charset="utf-8"&gt;</span>
+<span class="text-slate-400">&lt;title&gt;</span>Indice de Masa Corporal<span class="text-slate-400">&lt;/title&gt;</span>
+<span class="text-slate-400">&lt;body&gt;</span>
+<span class="text-slate-400">&lt;font face="Arial"&gt;</span>
+<span class="text-sky-400">&lt;h2&gt;</span>Funciones definidas por el usuarios<span class="text-sky-400">&lt;/h2&gt;</span>
+<span class="text-amber-300">&lt;script type="text/javascript"&gt;</span>
+<span class="text-emerald-400">//Indice de masa corporal (IMC) = peso / altura (al cuadrado)</span>
+<span class="text-emerald-400">//funcion para calcular el IMC</span>
+<span class="text-purple-400">function</span> <span class="text-blue-400">calcularIMC</span>(peso, altura) {
+    <span class="text-purple-400">return</span> peso / Math.pow(altura, <span class="text-orange-300">2</span>);
+}
+
+peso = prompt(<span class="text-amber-200">"Cuanto pesas: "</span>, <span class="text-amber-200">"en kg"</span>); <span class="text-emerald-400">//en kg</span>
+altura = prompt(<span class="text-amber-200">"Cuanto mides: "</span>, <span class="text-amber-200">"en metros"</span>); <span class="text-emerald-400">//en metros</span>
+
+<span class="text-emerald-400">//Llama a la función IMC con sus dos parámetros</span>
+<span class="text-purple-400">var</span> IMC = Math.round(calcularIMC(peso, altura));
+
+<span class="text-emerald-400">//Ahora evalua cual es el IMC que tienes</span>
+<span class="text-purple-400">if</span> (IMC &gt;= <span class="text-orange-300">18.5</span> &amp;&amp; IMC &lt; <span class="text-orange-300">24.9</span>) {
+    document.write(<span class="text-amber-200">"El IMC es "</span> + IMC + <span class="text-amber-200">" Tienes un peso normal"</span>);
+} <span class="text-purple-400">else if</span> (IMC &gt;= <span class="text-orange-300">25</span> &amp;&amp; IMC &lt; <span class="text-orange-300">29.99</span>) {
+    document.write(<span class="text-amber-200">"El IMC es "</span> + IMC + <span class="text-amber-200">" Tienes sobrepeso"</span>);
+} <span class="text-purple-400">else if</span> (IMC &gt;= <span class="text-orange-300">30</span> &amp;&amp; IMC &lt; <span class="text-orange-300">34.99</span>) {
+    document.write(<span class="text-amber-200">"El IMC es "</span> + IMC + <span class="text-amber-200">" Tienes obesidad moderada"</span>);
+} <span class="text-purple-400">else if</span> (IMC &gt;= <span class="text-orange-300">35</span> &amp;&amp; IMC &lt; <span class="text-orange-300">39.9</span>) {
+    document.write(<span class="text-amber-200">"El IMC es "</span> + IMC + <span class="text-amber-200">" Tienes obesidad severa"</span>);
+}
+<span class="text-purple-400">else</span> {
+    document.write(<span class="text-amber-200">"No aplica con ese peso o estatura"</span>);
+}
+<span class="text-amber-300">&lt;/script&gt;</span>
+<span class="text-slate-400">&lt;/font&gt;</span>
+<span class="text-slate-400">&lt;/body&gt;</span>
+<span class="text-slate-400">&lt;/html&gt;</span></code></pre>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Textareas ocultos con el código limpio exacto para copiar al portapapeles -->
+    <textarea id="codigo-circulo-raw" class="hidden" aria-hidden="true"><html>
+<body>
+<font face="Arial">
+<h2>Funciones que devuelven resultados</h2>
+
+<script type="text/javascript">
+
+function calcularAreaCirculo(radio) {
+  var area = Math.PI * radio * radio; //calcula el área del círculo
+  var area2=area.toFixed(2); // lo ajusta a 2 decimales
+  return area2;
+}
+radio=prompt("Dame el valor del radio del círculo:", "Escribe un número entero");
+var areaCirculo = calcularAreaCirculo(radio);
+document.write("El área del círculo es: " + areaCirculo);
+</script>
+</font>
+</body>
+</html></textarea>
+
+    <textarea id="codigo-imc-raw" class="hidden" aria-hidden="true"><!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+<title>Indice de Masa Corporal</title>
+<body>
+<font face="Arial">
+<h2>Funciones definidas por el usuarios</h2>
+<script type="text/javascript">
+//Indice de masa corporal (IMC) = peso / altura (al cuadrado)
+//funcion para calcular el IMC
+function calcularIMC(peso, altura) {
+    return peso / Math.pow(altura, 2);
+}
+
+peso =prompt("Cuanto pesas: ","en kg"); //en kg
+altura = prompt("Cuanto mides: ", "en metros"); //en metros
+
+//Llama a la función IMC con sus dos parámetros
+var IMC = Math.round(calcularIMC(peso, altura));
+
+//Ahora evalua cual es el IMC que tienes
+if (IMC >= 18.5 && IMC <24.9) {
+    document.write("El IMC es " + IMC + " Tienes un peso normal");
+} else if (IMC >= 25 && IMC <29.99) {
+    document.write("El IMC es " + IMC + " Tienes sobrepeso");
+} else if (IMC >= 30 && IMC <34.99) {
+    document.write("El IMC es " + IMC + " Tienes obesidad moderada");
+} else if (IMC >= 35 && IMC <39.9) {
+    document.write("El IMC es " + IMC + " Tienes obesidad severa");
+}
+else {
+    document.write("No aplica con ese peso o estatura");
+}
+</script>
+</font>
+</body>
+</html></textarea>
+
+    <!-- Lógica JavaScript de la aplicación -->
+    <script>
+        /**
+         * Alterna entre las dos secciones principales desde el menú lateral
+         * y actualiza los estilos visuales de los botones activos.
+         */
+        function cambiarSeccion(seccion) {
+            const secCirculo = document.getElementById('seccion-circulo');
+            const secImc = document.getElementById('seccion-imc');
+            const btnCirculo = document.getElementById('btn-nav-circulo');
+            const btnImc = document.getElementById('btn-nav-imc');
+
+            if (seccion === 'circulo') {
+                secCirculo.classList.remove('hidden');
+                secImc.classList.add('hidden');
+
+                // Activar botón Círculo
+                btnCirculo.className = "w-full flex items-center gap-3 px-4 py-3.5 rounded-xl text-left font-medium transition-all duration-200 bg-indigo-600 text-white shadow-md";
+                // Desactivar botón IMC
+                btnImc.className = "w-full flex items-center gap-3 px-4 py-3.5 rounded-xl text-left font-medium transition-all duration-200 text-slate-300 hover:bg-slate-800 hover:text-white";
+            } else {
+                secImc.classList.remove('hidden');
+                secCirculo.classList.add('hidden');
+
+                // Activar botón IMC
+                btnImc.className = "w-full flex items-center gap-3 px-4 py-3.5 rounded-xl text-left font-medium transition-all duration-200 bg-teal-600 text-white shadow-md";
+                // Desactivar botón Círculo
+                btnCirculo.className = "w-full flex items-center gap-3 px-4 py-3.5 rounded-xl text-left font-medium transition-all duration-200 text-slate-300 hover:bg-slate-800 hover:text-white";
+            }
+        }
+
+        /**
+         * Lógica exacta del Ejercicio 1: Área del Círculo
+         */
+        function calcularAreaCirculo(radio) {
+            var area = Math.PI * radio * radio; // calcula el área del círculo
+            var area2 = area.toFixed(2); // lo ajusta a 2 decimales
+            return area2;
+        }
+
+        function ejecutarCirculo(event) {
+            event.preventDefault();
+            try {
+                const inputRadio = document.getElementById('input-radio').value;
+                const radio = parseFloat(inputRadio);
+
+                if (isNaN(radio)) {
+                    mostrarToast("Por favor ingresa un número válido.");
+                    return;
+                }
+
+                var areaCirculo = calcularAreaCirculo(radio);
+                const mensajeSalida = "El área del círculo es: " + areaCirculo;
+
+                const box = document.getElementById('resultado-circulo-box');
+                const texto = document.getElementById('resultado-circulo-texto');
+
+                texto.textContent = mensajeSalida;
+                box.classList.remove('hidden');
+            } catch (error) {
+                mostrarToast("Ocurrió un error al calcular el área.");
+            }
+        }
+
+        /**
+         * Lógica exacta del Ejercicio 2: Índice de Masa Corporal (IMC)
+         */
+        function calcularIMC(peso, altura) {
+            return peso / Math.pow(altura, 2);
+        }
+
+        function ejecutarIMC(event) {
+            event.preventDefault();
+            try {
+                const peso = parseFloat(document.getElementById('input-peso').value);
+                const altura = parseFloat(document.getElementById('input-altura').value);
+
+                if (isNaN(peso) || isNaN(altura) || altura <= 0) {
+                    mostrarToast("Ingresa valores válidos de peso y altura.");
+                    return;
+                }
+
+                // Llama a la función IMC con sus dos parámetros y redondea
+                var IMC = Math.round(calcularIMC(peso, altura));
+                var mensajeSalida = "";
+
+                // Evalúa las condiciones exactas del código original
+                if (IMC >= 18.5 && IMC < 24.9) {
+                    mensajeSalida = "El IMC es " + IMC + " Tienes un peso normal";
+                } else if (IMC >= 25 && IMC < 29.99) {
+                    mensajeSalida = "El IMC es " + IMC + " Tienes sobrepeso";
+                } else if (IMC >= 30 && IMC < 34.99) {
+                    mensajeSalida = "El IMC es " + IMC + " Tienes obesidad moderada";
+                } else if (IMC >= 35 && IMC < 39.9) {
+                    mensajeSalida = "El IMC es " + IMC + " Tienes obesidad severa";
+                } else {
+                    mensajeSalida = "No aplica con ese peso o estatura";
+                }
+
+                const box = document.getElementById('resultado-imc-box');
+                const texto = document.getElementById('resultado-imc-texto');
+
+                texto.textContent = mensajeSalida;
+                box.classList.remove('hidden');
+            } catch (error) {
+                mostrarToast("Ocurrió un error al calcular el IMC.");
+            }
+        }
+
+        /**
+         * Despliega u oculta el bloque de código fuente
+         */
+        function toggleCodigo(wrapperId, iconId) {
+            const wrapper = document.getElementById(wrapperId);
+            const icon = document.getElementById(iconId);
+            
+            wrapper.classList.toggle('hidden');
+            icon.classList.toggle('rotate-90');
+        }
+
+        /**
+         * Copia el código fuente al portapapeles de forma compatible con iFrames
+         */
+        function copiarCodigo(textareaId) {
+            try {
+                const source = document.getElementById(textareaId);
+                const tempInput = document.createElement('textarea');
+                tempInput.value = source.value;
+                document.body.appendChild(tempInput);
+                tempInput.select();
+                document.execCommand('copy');
+                document.body.removeChild(tempInput);
+                
+                mostrarToast("¡Código copiado al portapapeles!");
+            } catch (err) {
+                mostrarToast("No se pudo copiar el código.");
+            }
+        }
+
+        /**
+         * Muestra una notificación temporal limpia en pantalla
+         */
+        let toastTimeout;
+        function mostrarToast(mensaje) {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toast-message');
+            
+            toastMsg.textContent = mensaje;
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            
+            clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
